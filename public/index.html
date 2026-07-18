@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>ECEL212 — Lab Companion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="sheet">
+
+  <!-- Titleblock header -->
+  <header class="titleblock">
+    <div class="titleblock-left">
+      <svg class="gate-logo" viewBox="0 0 48 32" aria-hidden="true">
+        <path d="M4 4 H20 A12 12 0 0 1 20 28 H4 Z" fill="none" stroke="var(--trace-cyan)" stroke-width="2.5"/>
+        <line x1="0" y1="10" x2="4" y2="10" stroke="var(--trace-cyan)" stroke-width="2.5"/>
+        <line x1="0" y1="22" x2="4" y2="22" stroke="var(--trace-cyan)" stroke-width="2.5"/>
+        <line x1="32" y1="16" x2="48" y2="16" stroke="var(--trace-cyan)" stroke-width="2.5"/>
+      </svg>
+      <div class="titleblock-text">
+        <div class="course-label">ECEL212 · DIGITAL LOGIC LAB</div>
+        <div class="sub-label">Lab Companion · reference &amp; troubleshooting help, no answer key</div>
+      </div>
+    </div>
+    <div class="led-strip" id="ledStrip" aria-hidden="true">
+      <span class="led"></span><span class="led"></span><span class="led"></span><span class="led"></span>
+    </div>
+  </header>
+
+  <!-- Chat area -->
+  <main class="chat" id="chat">
+    <div class="msg msg--tutor">
+      <div class="chip chip--tutor">
+        <div class="pins pins--left"><span></span><span></span><span></span></div>
+        <div class="chip-body">
+          Hi — I'm the ECEL212 lab companion. Ask me about pinouts, hardware setup, or
+          troubleshooting and I'll answer directly. For truth tables, simplifications,
+          or circuit designs you're being assessed on, I'll guide you through it rather
+          than hand you the finished answer. Tell me what you're stuck on.
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Terminal / input strip -->
+  <form class="terminal" id="terminalForm">
+    <span class="terminal-tick">IN&nbsp;»</span>
+    <textarea
+      id="input"
+      class="terminal-input"
+      placeholder="Ask about gates, K-maps, flip-flops, state machines…"
+      rows="1"
+      autocomplete="off"
+    ></textarea>
+    <button type="submit" class="pin-button" id="sendBtn">SEND</button>
+  </form>
+
+  <div class="footnote" id="footnote">Session for this class only · logged for course quality review</div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
