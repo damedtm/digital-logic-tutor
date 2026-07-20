@@ -59,6 +59,12 @@ body{
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 1;
+}
+
+.titleblock-text{
+  flex: 1;
+  text-align: center;
 }
 
 .gate-logo{ width: 40px; height: 27px; flex-shrink: 0; }
