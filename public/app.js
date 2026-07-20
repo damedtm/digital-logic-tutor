@@ -32,16 +32,17 @@ function addMessage(role, text) {
   const chip = document.createElement('div');
   chip.className = `chip chip--${role === 'user' ? 'student' : 'tutor'}`;
 
-  if (role !== 'user') {
-    const pins = document.createElement('div');
-    pins.className = 'pins pins--left';
-    pins.innerHTML = '<span></span><span></span><span></span>';
-    chip.appendChild(pins);
-  }
 
-  const body = document.createElement('div');
+const body = document.createElement('div');
   body.className = 'chip-body';
-  body.textContent = text;
+
+  if (role === 'user') {
+    body.textContent = text; // student input always plain text
+  } else {
+    const rawHtml = window.marked ? window.marked.parse(text) : text;
+    const cleanHtml = window.DOMPurify ? window.DOMPurify.sanitize(rawHtml) : text;
+    body.innerHTML = cleanHtml;
+  }
   chip.appendChild(body);
 
   wrap.appendChild(chip);
