@@ -25,6 +25,9 @@ function getSheetsClient() {
   return sheetsClient;
 }
 
+// Lightweight keyword/pattern check for common guardrail-bypass framings.
+// Not foolproof — a determined student can phrase around it — but it turns
+// "read every transcript" into "check the flagged ones first."
 const BYPASS_PATTERNS = [
   /ignore (your|the|any|all)?\s*(previous|prior|above)?\s*instructions?/i,
   /disregard (your|the)?\s*(previous|prior)?\s*(rules?|instructions?|guidelines?)/i,
@@ -40,6 +43,22 @@ const BYPASS_PATTERNS = [
 
 export function isLikelyBypassAttempt(studentMessage) {
   return BYPASS_PATTERNS.some((pattern) => pattern.test(studentMessage));
+}
+
+// Appends one row: timestamp, clientId, student message, tutor reply, flagged.
+// Fire-and-forget from the caller's perspective — errors are caught and
+// logged here, never thrown back up to break the chat response.
+// Strips common Markdown syntax down to plain, readable text for the log —
+// so rows are clean the moment they're written, with no spreadsheet-side
+// post-processing script needed.
+function stripMarkdown(text) {
+  return text
+    .replace(/^#{1,6}\s+/gm, '')          // headers
+    .replace(/\*\*(.*?)\*\*/g, '$1')      // bold
+    .replace(/\*(.*?)\*/g, '$1')          // italics
+    .replace(/`([^`]+)`/g, '$1')          // inline code
+    .replace(/^[-*]\s+/gm, '• ')          // bullet lists -> plain bullet
+    .trim();
 }
 
 export async function logExchange({ clientId, studentMessage, tutorReply }) {
@@ -59,7 +78,7 @@ export async function logExchange({ clientId, studentMessage, tutorReply }) {
           new Date().toISOString(),
           clientId || 'unknown',
           studentMessage,
-          tutorReply,
+          stripMarkdown(tutorReply),
           flagged ? 'FLAGGED' : '',
         ]],
       },
