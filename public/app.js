@@ -17,7 +17,15 @@ if (!clientId) {
 
 //Class-gate
 async function ensurePasscode() {
+  let attempts = 0;
   while (!passcode) {
+    attempts++;
+    if (attempts > 20) {
+     
+      footnote.textContent = 'Could not get an access code — please reload this tab while it\'s active/focused.';
+      footnote.classList.add('error');
+      return;
+    }
     const entered = window.prompt('Enter your class access code for Digital Logic Companion:');
     if (entered === null) continue;
     passcode = entered.trim();
@@ -36,7 +44,7 @@ function addMessage(role, text) {
   body.className = 'chip-body';
 
   if (role === 'user') {
-    body.textContent = text; // student input always plain text
+    body.textContent = text; 
   } else {
     const rawHtml = window.marked ? window.marked.parse(text) : text;
     const cleanHtml = window.DOMPurify ? window.DOMPurify.sanitize(rawHtml) : text;
@@ -76,7 +84,7 @@ function showThinkingBubble() {
   wrap.appendChild(chip);
   chat.appendChild(wrap);
   chat.scrollTop = chat.scrollHeight;
-  return wrap; // so we can remove it later
+  return wrap; // 
 }
 
 function setThinking(on) {
