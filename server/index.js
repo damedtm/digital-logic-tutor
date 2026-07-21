@@ -3,6 +3,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import { logExchange } from './logger.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -115,7 +116,7 @@ app.post('/api/chat', async (req, res) => {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 600,
+        max_tokens: 2500,
         system: SYSTEM_BLOCKS,
         messages: trimmed,
       }),
@@ -135,6 +136,14 @@ app.post('/api/chat', async (req, res) => {
       .trim();
 
     trackCacheUsage(data.usage);
+
+    // Fire-and-forget: never let logging delay or break the actual response.
+    const latestStudentMessage = [...trimmed].reverse().find((m) => m.role === 'user');
+    logExchange({
+      clientId: clientKey,
+      studentMessage: latestStudentMessage?.content || '[no message found]',
+      tutorReply: reply,
+    });
 
     res.json({ reply: reply || "I didn't catch that — could you rephrase?" });
   } catch (err) {

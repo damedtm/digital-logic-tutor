@@ -335,3 +335,21 @@ body{
   .chip{ max-width: 90%; font-size: 14px; }
   .sub-label{ display: none; }
 }
+
+/* Thinking indicator: animated trailing dots inside a chat bubble */
+@keyframes thinking-dot-pulse {
+  0%, 100% { opacity: 0.2; }
+  50%      { opacity: 1; }
+}
+
+.thinking-dot {
+  animation: thinking-dot-pulse 1.4s infinite;
+  color: var(--trace-cyan);
+}
+.thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+.thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+
+.thinking-label {
+  color: var(--trace-cyan-dim);
+  font-style: italic;
+}

@@ -19,7 +19,7 @@ if (!clientId) {
 async function ensurePasscode() {
   while (!passcode) {
     const entered = window.prompt('Enter your class access code for Digital Logic Companion:');
-    if (entered === null) continue; 
+    if (entered === null) continue;
     passcode = entered.trim();
   }
   sessionStorage.setItem('classPasscode', passcode);
@@ -32,8 +32,7 @@ function addMessage(role, text) {
   const chip = document.createElement('div');
   chip.className = `chip chip--${role === 'user' ? 'student' : 'tutor'}`;
 
-
-const body = document.createElement('div');
+  const body = document.createElement('div');
   body.className = 'chip-body';
 
   if (role === 'user') {
@@ -49,6 +48,35 @@ const body = document.createElement('div');
   chat.appendChild(wrap);
   chat.scrollTop = chat.scrollHeight;
   return body;
+}
+
+function showThinkingBubble() {
+  const wrap = document.createElement('div');
+  wrap.className = 'msg msg--tutor';
+
+  const chip = document.createElement('div');
+  chip.className = 'chip chip--tutor';
+
+  const body = document.createElement('div');
+  body.className = 'chip-body';
+
+  const label = document.createElement('span');
+  label.className = 'thinking-label';
+  label.textContent = 'Thinking';
+  body.appendChild(label);
+
+  for (let i = 0; i < 3; i++) {
+    const dot = document.createElement('span');
+    dot.className = 'thinking-dot';
+    dot.textContent = '.';
+    body.appendChild(dot);
+  }
+
+  chip.appendChild(body);
+  wrap.appendChild(chip);
+  chat.appendChild(wrap);
+  chat.scrollTop = chat.scrollHeight;
+  return wrap; // so we can remove it later
 }
 
 function setThinking(on) {
@@ -83,6 +111,7 @@ form.addEventListener('submit', async (e) => {
   setThinking(true);
   footnote.textContent = 'Session for this class only · conversations are not stored';
   footnote.classList.remove('error');
+  const thinkingBubble = showThinkingBubble();
 
   try {
     const res = await fetch('/api/chat', {
@@ -106,9 +135,11 @@ form.addEventListener('submit', async (e) => {
     if (!res.ok) throw new Error('Something went wrong reaching the tutor.');
 
     const data = await res.json();
+    thinkingBubble.remove();
     addMessage('assistant', data.reply);
     history.push({ role: 'assistant', content: data.reply });
   } catch (err) {
+    thinkingBubble.remove();
     footnote.textContent = err.message;
     footnote.classList.add('error');
   } finally {
