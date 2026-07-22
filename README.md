@@ -1,4 +1,4 @@
-# ECEL212 Digital Logic Lab Companion
+# Digital Logic Lab Companion
 
 A class-only chatbot for Digital Logic Lab. It answers reference,
 procedural, and safety questions directly, but **guides students through the
