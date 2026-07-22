@@ -18,6 +18,7 @@ digital-logic-tutor/
 │   └── app.js
 ├── server/
 │   ├── index.js         ← backend: calls the Claude API, checks passcode, rate-limits
+│   ├── logger.js         ← writes each exchange to Google Sheets
 │   └── system-prompt.txt← the prompt that controls bot behavior
 ├── SYSTEM_PROMPT.md      ← same prompt + notes on *why* it's written this way
 ├── package.json
@@ -52,6 +53,8 @@ cp .env.example .env
 Edit `.env`:
 - `ANTHROPIC_API_KEY` — from your Anthropic Console.
 - `CLASS_PASSCODE` — pick something simple to say out loud in lecture, e.g. `logic-fall26`.
+- `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY`, `GOOGLE_SHEET_ID` — only
+  needed if logging is enabled (see Section 5 below). Leave blank to run without logging.
 - Leave the rest at their defaults to start.
 
 ```bash
@@ -69,8 +72,9 @@ This is a small Node/Express app, so any of these work well.
 2. On [render.com](https://render.com): **New → Web Service**, connect the repo.
 3. Build command: `npm install`. Start command: `npm start`.
 4. Under **Environment**, add `ANTHROPIC_API_KEY`, `CLASS_PASSCODE`, and
-   optionally `ANTHROPIC_MODEL` / `RATE_LIMIT_MAX`.
-5. Deploy. Render gives you a URL like `digital-logic-tutor.onrender.com` 
+   optionally `ANTHROPIC_MODEL` / `RATE_LIMIT_MAX` — plus the three
+   `GOOGLE_*` variables from Section 5 if you want logging enabled in production.
+5. Deploy. Render gives you a URL like `digital-logic-tutor.onrender.com`
    That's what you share with students.
 
 ### Railway
@@ -96,6 +100,43 @@ After the first week of real use:
    `server/system-prompt.txt`.
 3. Redeploy. The few-shot examples are what keep this reliable, expect to
    revise them once or twice per term.
+
+## 5. Conversation logging (Google Sheets)
+
+Every exchange (browser client ID, student prompt, bot response, and
+timestamp) is written to a Google Sheet in real time via `server/logger.js`.
+This gives visibility into how students are actually using the bot, so you
+can spot guardrail edge cases (see Section 4) and unusual usage patterns.
+
+### Setup
+1. In Google Cloud Console, create a project (or use an existing one) and
+   enable the **Google Sheets API**.
+2. Create a **service account**, generate a JSON key for it, and copy out:
+   - the service account's client email
+   - the private key
+3. Create a Google Sheet to log to, and share it with the service account's
+   client email (Editor access).
+4. Copy the Sheet ID out of its URL (the long string between `/d/` and `/edit`).
+5. Set these in `.env`:
+   ```
+   GOOGLE_SERVICE_ACCOUNT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
+   GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+   GOOGLE_SHEET_ID=your-sheet-id-here
+   ```
+   (Keep the private key's `\n` characters escaped — most hosts, including
+   Render, need it as a single-line string exactly like this.)
+
+### Notes
+- Logging is best-effort: if the Sheets write fails, it's caught and logged
+  server-side without blocking the student's response.
+- Leaving the three `GOOGLE_*` variables blank disables logging entirely —
+  the app runs fine without it.
+- **Access control matters here**: whoever owns the Sheet, keep its sharing
+  setting restricted (specific people, not "anyone with the link"), since it
+  contains real student conversation data.
+- For production, use a department-owned Google Cloud project and service
+  account rather than a personal one, so log ownership and access sit with
+  the institution, not an individual developer.
 
 ## 6. Prompt caching
 
@@ -125,4 +166,3 @@ cache hit rate.
   conversation length.
 - Model pricing and current rate limits change — check
   [the Claude API pricing page](https://docs.claude.com/en/docs/about-claude/pricing)
-
