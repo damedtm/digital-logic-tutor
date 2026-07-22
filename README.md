@@ -10,6 +10,26 @@ actually runs on.
 Students access it from a phone or laptop through a regular web page. No app
 install required.
 
+To run this locally on your device, follow the Quick Start below.
+
+## Quick Start (Local)
+
+1. Open this folder in VS Code (`File → Open Folder`).
+2. Open a terminal (`` Ctrl+` ``).
+3. Check Node is installed: `node -v` (need v18+; install from nodejs.org if missing).
+4. Install dependencies:
+   ```bash
+   npm install
+   ```
+5. `.env` is already included with working values — no setup needed there.
+6. Start the app:
+   ```bash
+   npm start
+   ```
+7. Open your browser to `http://localhost:3000`.
+
+If port 3000 is already in use, change `PORT` in `.env` and restart.
+
 ```
 digital-logic-tutor/
 ├── public/              ← frontend (served as static files)
